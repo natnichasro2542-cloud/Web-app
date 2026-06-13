@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Talk - ระบบบันทึกข้อมูลความปลอดภัย</title>
+    
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#047857">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Safety Talk">
+    
+    <!-- Dynamic Manifest Placeholder -->
+    <link id="pwa-manifest" rel="manifest" href="">
+
+    <!-- Google Fonts: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        secondary: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #047857 0%, #10b981 60%, #fbbf24 100%);
+        }
+        .btn-gradient-green {
+            background: linear-gradient(to right, #10b981, #059669);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient-green:hover {
+            background: linear-gradient(to right, #059669, #047857);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2.5 rounded-full shadow-md">
+                    <i class="fa-solid fa-shield-halved text-primary-600 text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-wide flex items-center gap-2">
+                        Safety talk <span class="text-xs bg-yellow-400 text-green-900 px-2 py-0.5 rounded-full font-bold">PWA V1</span>
+                    </h1>
+                    <p class="text-xs text-green-100 font-light">ระบบบันทึกข้อมูลความปลอดภัย อาชีวอนามัย และสภาพแวดล้อมในการทำงาน</p>
+                </div>
+            </div>
+            <!-- Live Clock (Always Visible) -->
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="live-time" class="text-sm font-semibold"></p>
+                    <p class="text-xs text-green-100">เวลาปัจจุบันของระบบ</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN: Input Form Registration (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-primary-600 to-primary-500 px-5 py-4 text-white flex justify-between items-center">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Safety talk
+                    </h2>
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded-md">ฟอร์มบันทึกข้อมูล</span>
+                </div>
+
+                <!-- Form Content -->
+                <form id="safety-form" class="p-6 space-y-4">
+                    <!-- Employee Name -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            <i class="fa-solid fa-user text-primary-500 mr-1"></i> ชื่อ - นามสกุล <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="emp-name" required
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            placeholder="กรุณากรอกชื่อและนามสกุล">
+                    </div>
+
+                    <!-- Branch Input -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            <i class="fa-solid fa-code-branch text-primary-500 mr-1"></i> สาขา <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="emp-branch" required
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            placeholder="กรุณากรอกชื่อสาขา">
+                    </div>
+
+                    <!-- Date & Time Row -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                <i class="fa-solid fa-calendar-days text-primary-500 mr-1"></i> วันที่ <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" id="talk-date" required
+                                class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                <i class="fa-solid fa-clock text-primary-500 mr-1"></i> เวลา <span class="text-red-500">*</span>
+                            </label>
+                            <input type="time" id="talk-time" required
+                                class="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+
+                    <!-- Details Area -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            <i class="fa-solid fa-circle-info text-primary-500 mr-1"></i> รายละเอียด <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="talk-details" rows="3" required
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                            placeholder="ระบุหัวข้อความปลอดภัย คำแนะนำ และรายละเอียดการสนทนา"></textarea>
+                    </div>
+
+                    <!-- Image Uploader (Restored to Beautiful Full Width) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            <i class="fa-solid fa-image text-primary-500 mr-1"></i> แนบรูปภาพกิจกรรม (จำกัดและย่อขนาดภาพอัตโนมัติ)
+                        </label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-primary-500 transition cursor-pointer relative" id="drop-zone">
+                            <div class="space-y-1 text-center flex flex-col justify-center items-center" id="upload-placeholder">
+                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl mb-2"></i>
+                                <span class="text-sm font-medium text-primary-600 hover:text-primary-500">อัปโหลดรูปภาพ</span>
+                                <p class="text-xs text-gray-500">คลิกที่นี่ หรือ ลากไฟล์รูปภาพมาวาง</p>
+                            </div>
+
+                            <!-- Preview container -->
+                            <div id="image-preview-container" class="hidden w-full h-full flex flex-col items-center justify-center">
+                                <img id="image-preview" src="#" alt="ภาพที่อัปโหลด" class="max-h-40 rounded-lg object-cover shadow-md mb-2">
+                                <button type="button" id="remove-img-btn" class="text-xs bg-red-100 hover:bg-red-200 text-red-600 font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 transition">
+                                    <i class="fa-solid fa-trash-can"></i> ลบรูปภาพ
+                                </button>
+                            </div>
+                            <input id="image-input" name="image-input" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button type="submit" class="w-full text-white font-bold py-3 px-4 rounded-xl shadow-lg btn-gradient-green flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk text-lg"></i> บันทึกรายการ
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: Dashboard & Records Listing (7 cols) -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- PWA Install Banner (Dynamic Responsive Installation Card) -->
+            <div id="pwa-install-banner" class="hidden bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-2xl shadow-xl p-5 border border-emerald-500/20 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10">
+                    <i class="fa-solid fa-mobile-screen-button text-9xl"></i>
+                </div>
+                <div class="flex justify-between items-start relative z-10">
+                    <div class="flex gap-3">
+                        <div class="bg-white/20 p-2.5 rounded-xl h-11 w-11 flex items-center justify-center">
+                            <i class="fa-solid fa-mobile-retro text-yellow-300 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm sm:text-base">📲 ติดตั้งแอป Safety Talk บนมือถือ</h3>
+                            <p class="text-[11px] text-emerald-100 mt-0.5">เข้าใช้งานผ่านหน้าจอโฮมได้รวดเร็วทันใจ พร้อมทำงานอย่างไหลลื่น</p>
+                        </div>
+                    </div>
+                    <button onclick="dismissInstallBanner()" class="text-white/60 hover:text-white p-1 transition" title="ซ่อนชั่วคราว">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+                
+                <!-- Install Guidance depending on OS (Android vs Apple iOS) -->
+                <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10 pt-3 border-t border-white/10">
+                    <!-- iOS Instructions -->
+                    <div id="pwa-ios-instructions" class="hidden text-xs text-emerald-50 space-y-1.5">
+                        <p class="font-bold text-yellow-300"><i class="fa-solid fa-apple mr-1"></i> ขั้นตอนสำหรับ iPhone (Safari):</p>
+                        <p class="text-[11px] flex items-center gap-1"><i class="fa-solid fa-share-from-square text-emerald-300"></i> 1. แตะปุ่ม "แชร์" (Share) ที่แถบด้านล่างของจอ</p>
+                        <p class="text-[11px] flex items-center gap-1"><i class="fa-solid fa-square-plus text-emerald-300"></i> 2. เลื่อนลงแล้วเลือก "เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</p>
+                    </div>
+                    <!-- Android Button -->
+                    <div id="pwa-android-install-area" class="hidden w-full sm:w-auto">
+                        <button id="pwa-install-btn" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-green-950 font-bold text-xs py-2 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 hover:scale-105 active:scale-95">
+                            <i class="fa-solid fa-circle-down"></i> ติดตั้งแอปพลิเคชัน
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Action / Dashboard Container with Dynamic Tab views -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-800 to-gray-700 px-5 py-3 text-white flex justify-between items-center">
+                    <h2 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-yellow-400"></i> Dashboard
+                    </h2>
+                </div>
+
+                <!-- Tabs navigation section -->
+                <div class="flex border-b border-gray-100 bg-gray-50/50 p-2 gap-1 overflow-x-auto">
+                    <button onclick="switchDashboardTab('total')" id="tab-btn-total" class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-square-poll-vertical"></i> สถิติรวม
+                    </button>
+                    <button onclick="switchDashboardTab('monthly')" id="tab-btn-monthly" class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap bg-transparent text-gray-600 hover:bg-gray-100 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-calendar-days"></i> สถิติรายเดือน
+                    </button>
+                    <button onclick="switchDashboardTab('branch')" id="tab-btn-branch" class="flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap bg-transparent text-gray-600 hover:bg-gray-100 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-code-branch"></i> สถิติรายสาขา
+                    </button>
+                </div>
+
+                <!-- Dashboard Content View (Structured by Tabs) -->
+                <div id="dashboard-content" class="p-5">
+                    
+                    <!-- TAB 1: สถิติรวม -->
+                    <div id="panel-total" class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <!-- Metrics 1 -->
+                            <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl text-center">
+                                <span class="text-xs text-emerald-600 font-bold block mb-1">ยอดบันทึกทั้งหมด</span>
+                                <span id="stat-total" class="text-2xl font-black text-emerald-700">0</span>
+                                <span class="text-[10px] text-gray-500 block">รายการ</span>
+                            </div>
+                            <!-- Metrics 2 -->
+                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl text-center">
+                                <span class="text-xs text-blue-600 font-bold block mb-1">บันทึกวันนี้</span>
+                                <span id="stat-today" class="text-2xl font-black text-blue-700">0</span>
+                                <span class="text-[10px] text-gray-500 block">รายการ</span>
+                            </div>
+                            <!-- Metrics 3 -->
+                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-center">
+                                <span class="text-xs text-amber-600 font-bold block mb-1">พนักงานบันทึก</span>
+                                <span id="stat-people" class="text-2xl font-black text-amber-700">0</span>
+                                <span class="text-[10px] text-gray-500 block">คน (ไม่ซ้ำ)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-emerald-50/40 border border-emerald-100/50 p-3 rounded-xl flex items-start gap-2.5">
+                            <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 text-xs sm:text-sm"></i>
+                            <p class="text-[11px] leading-relaxed text-gray-600">
+                                <span class="font-bold text-gray-800">คำแนะนำ:</span> สื่อสารและตรวจประเมินความปลอดภัยหน้างานอย่างสม่ำเสมอ เพื่อลดอัตราความเสี่ยงและการปฏิบัติงานที่อันตรายของพนักงาน
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: สถิติรายเดือน -->
+                    <div id="panel-monthly" class="hidden space-y-3">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                            <i class="fa-solid fa-calendar-days text-emerald-500"></i> สถิติ Safety Talk ประจำเดือน
+                        </h4>
+                        <div id="monthly-bars" class="space-y-2.5 max-h-[160px] overflow-y-auto pr-1">
+                            <!-- Monthly bars rendered dynamically inside JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: สถิติรายสาขา (แสดงสูงสุด 10 อันดับแรก) -->
+                    <div id="panel-branch" class="hidden space-y-3">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                            <i class="fa-solid fa-network-wired text-emerald-500"></i> สถิติ Safety Talk แยกตามสาขา (สูงสุด 10 อันดับแรก)
+                        </h4>
+                        <div id="branch-bars" class="space-y-2.5 max-h-[160px] overflow-y-auto pr-1">
+                            <!-- Branch progress bars rendered dynamically inside JavaScript -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Connection Status & Sync bar -->
+            <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3.5 w-3.5">
+                        <span id="sync-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span id="sync-dot" class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                    </span>
+                    <div>
+                        <p class="text-xs font-bold text-gray-700 flex items-center gap-1">
+                            สถานะการซิงค์ข้อมูล: 
+                            <span id="sync-text" class="text-emerald-600 font-bold">กำลังติดต่อกับระบบคลาวด์...</span>
+                        </p>
+                        <p class="text-[10px] text-gray-500">
+                            Google Sheet: <a href="https://docs.google.com/spreadsheets/d/1C0TSf35z2jg4soZ_vN-dhi2iC7l3sflMAMgdIxhbdxE/edit?gid=0#gid=0" target="_blank" class="text-blue-500 underline hover:text-blue-600">เปิดดูในระบบคลาวด์ <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></a>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="last-sync-time" class="text-xs text-gray-500 font-mono">ซิงค์ล่าสุด: กำลังดาวน์โหลด</span>
+                    <button onclick="forceSyncData()" title="เชื่อมต่อและรีเฟรชทันที" class="p-2 text-primary-600 hover:text-primary-700 hover:bg-emerald-50 rounded-lg transition">
+                        <i class="fa-solid fa-rotate text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search, filter and list box -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-primary-700 to-primary-600 px-5 py-4 text-white flex justify-between items-center">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> ค้นหาประวัติรายการ
+                    </h2>
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded-md" id="record-count-badge">พบ 0 รายการ</span>
+                </div>
+
+                <!-- Filters panel -->
+                <div class="p-5 border-b border-gray-100 space-y-3 bg-gray-50/50">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                        <!-- Key text search (Real-time while typing) -->
+                        <div class="sm:col-span-6">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">🔍 ค้นหาทันที (ชื่อ / สาขา / รายละเอียด)</label>
+                            <input type="text" id="search-query" onkeyup="handleRealTimeSearch()"
+                                class="w-full px-3.5 py-1.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 transition"
+                                placeholder="พิมพ์ข้อมูลที่ต้องการหาได้ทันที...">
+                        </div>
+                        <!-- Start date filter -->
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">📅 วันที่เริ่มต้น</label>
+                            <input type="date" id="search-date-start" onchange="handleRealTimeSearch()"
+                                class="w-full px-3.5 py-1.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        </div>
+                        <!-- End date filter -->
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">📅 วันที่สิ้นสุด</label>
+                            <input type="date" id="search-date-end" onchange="handleRealTimeSearch()"
+                                class="w-full px-3.5 py-1.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        </div>
+                    </div>
+
+                    <!-- Reset and Trigger actions -->
+                    <div class="flex justify-end gap-2">
+                        <button onclick="clearSearchFilters()" class="px-3 py-1.5 text-xs font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-lg transition flex items-center gap-1">
+                            ล้างการค้นหา
+                        </button>
+                        <button onclick="showAllRecords()" class="px-3 py-1.5 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition flex items-center gap-1">
+                            แสดงทั้งหมด
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Record List Table View -->
+                <div class="overflow-x-auto max-h-[380px] overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-800 text-white text-xs sticky top-0 z-10">
+                            <tr>
+                                <th class="py-3 px-4">วันที่ / เวลา</th>
+                                <th class="py-3 px-4">ชื่อ</th>
+                                <th class="py-3 px-4">สาขา</th>
+                                <th class="py-3 px-4 text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-table-body" class="divide-y divide-gray-100 text-xs">
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-gray-500">
+                                    <i class="fa-solid fa-spinner animate-spin text-2xl text-primary-500 mb-2"></i>
+                                    <p>กำลังดาวน์โหลดและซิงค์สถิติล่าสุดจาก Google Sheets คลาวด์...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: View Single Detailed Record & Image -->
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="detail-modal-content">
+            <div class="bg-gradient-to-r from-gray-800 to-gray-700 px-5 py-4 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-file-shield text-yellow-400"></i> รายละเอียดบันทึกกิจกรรม Safety Talk
+                </h3>
+                <button onclick="closeDetailModal()" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-start border-b border-gray-100 pb-2.5">
+                        <div>
+                            <p class="text-xs text-gray-500">ชื่อผู้สอนงาน / พนักงาน</p>
+                            <p class="font-bold text-gray-800" id="det-modal-name">-</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500">สาขา</p>
+                            <p class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full" id="det-modal-branch">-</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 border-b border-gray-100 pb-2.5">
+                        <div>
+                            <p class="text-xs text-gray-500">วันที่ทำการ Safety Talk</p>
+                            <p class="text-xs font-semibold text-gray-800" id="det-modal-date">-</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">เวลาที่บันทึก</p>
+                            <p class="text-xs font-semibold text-gray-800" id="det-modal-time">-</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">รายละเอียดบทสนทนาความปลอดภัย</p>
+                        <div class="bg-gray-50 border border-gray-100 p-3 rounded-lg text-xs leading-relaxed text-gray-700 whitespace-pre-wrap" id="det-modal-details">-</div>
+                    </div>
+
+                    <!-- Photo preview block -->
+                    <div id="det-modal-image-wrapper">
+                        <p class="text-xs text-gray-500 mb-1">ภาพถ่ายประกอบรายงานหน้างาน</p>
+                        <img src="" id="det-modal-img" alt="ภาพบันทึกความปลอดภัย" class="max-h-60 w-full object-cover rounded-xl border border-gray-100 shadow-md">
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-5 py-3 flex justify-end border-t border-gray-100">
+                <button onclick="closeDetailModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-lg transition">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Employee History Popup & training summary -->
+    <div id="history-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="history-modal-content">
+            <div class="bg-gradient-to-r from-primary-600 to-emerald-700 px-5 py-4 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-address-card text-yellow-400"></i> ประวัติประมวลผลความปลอดภัยรายบุคคล
+                </h3>
+                <button onclick="closeHistoryModal()" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <!-- Summary Card -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div class="md:col-span-8 space-y-1">
+                        <p class="text-xs text-gray-500">พนักงานผู้รายงานประวัติ</p>
+                        <h4 class="text-lg font-bold text-gray-800" id="hist-modal-emp-name">นายกิตติคุณ มั่นคง</h4>
+                        <p class="text-xs font-semibold text-primary-600 flex items-center gap-1">
+                            <i class="fa-solid fa-building text-[10px]"></i> <span id="hist-modal-emp-branch">คลังสินค้า</span>
+                        </p>
+                    </div>
+                    <div class="md:col-span-4 bg-gradient-to-br from-yellow-400 to-amber-500 text-amber-950 p-3 rounded-lg text-center flex flex-col justify-center shadow-sm">
+                        <span class="text-[10px] font-bold uppercase tracking-wider">ยอดการลงข้อมูลสะสม</span>
+                        <span class="text-2xl font-black" id="hist-modal-total-count">0</span>
+                        <span class="text-[9px] font-medium">ครั้งการฝึกฝนความปลอดภัย</span>
+                    </div>
+                </div>
+
+                <!-- Scroll timeline box -->
+                <div>
+                    <h5 class="text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">ประวัติการอบรมย้อนหลังของพนักงาน</h5>
+                    <div class="max-h-60 overflow-y-auto space-y-2.5 pr-2" id="hist-timeline-container">
+                        <!-- Cronological timeline dynamically injected -->
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-5 py-3 flex justify-end gap-2 border-t border-gray-100">
+                <button onclick="closeHistoryModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-lg transition">ปิดหน้าต่างนี้</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-900 text-gray-400 py-6 mt-8 border-t-4 border-primary-500">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="text-[10px] text-gray-600">
+                &copy; 2026 ระบบบันทึกข้อมูล Safety talk | ผู้พัฒนา หน่วยงานความปลอดภัย อาชีวอนามัย และสภาพแวดล้อมในการทำงาน- V.1
+            </p>
+        </div>
+    </footer>
+
+    <!-- Integrated JavaScript (Safety Logic Controllers) -->
+    <script>
+        // ==========================================
+        // CONFIGURATION & GLOBAL STATE (กำหนดค่าเริ่มต้นและสถานะระบบ)
+        // ==========================================
+
+        // URL ของ Google Apps Script Web App สำหรับเชื่อมต่อฐานข้อมูล Google Sheet
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxltrhwQsoH9FIZ9WxtklWYux8oFzdS7u6MoPDja6tkG4IW_ZdACmBkuaU5y-7dwUS7/exec';
+        // ลิงก์สำหรับเปิดดูตารางข้อมูลแบบ Real-time บนคลาวด์
+        const SHEET_PREVIEW_URL = 'https://docs.google.com/spreadsheets/d/1C0TSf35z2jg4soZ_vN-dhi2iC7l3sflMAMgdIxhbdxE/edit?gid=0#gid=0';
+
+        // ตัวแปรเก็บสถานะการทำงานทั้งหมดในแอปพลิเคชัน (State Management)
+        let state = {
+            records: [],                  // ข้อมูล Safety Talk ทั้งหมดที่ดึงมาจากคลาวด์
+            filteredRecords: [],          // ข้อมูลหลังจากผ่านการกรอง (Search/Filter)
+            compressedImageBase64: '',    // ภาพแนบที่ถูกย่อขนาดแล้วในรูปแบบ Base64
+            isLoading: false,             // สถานะการโหลดข้อมูล
+            lastSyncTime: null            // เวลาที่มีการเชื่อมโยงข้อมูลล่าสุด
+        };
+
+        // สำหรับเก็บ Event การติดตั้ง PWA
+        let deferredPrompt;
+
+        // ==========================================
+        // APPLICATION INITIALIZATION (เริ่มระบบเมื่อโหลดหน้าเว็บสำเร็จ)
+        // ==========================================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. เริ่มระบบนาฬิกาบอกเวลาแบบ Real-time ของระบบ
+            setInterval(updateLiveClock, 1000);
+            updateLiveClock();
+
+            // 2. กำหนดค่าเริ่มต้นของ วันที่ และ เวลา เป็นปัจจุบันในฟอร์มบันทึกข้อมูล (แก้ไขบั๊ก Timezone โดยดึงเวลาท้องถิ่น)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const localDateStr = `${year}-${month}-${day}`;
+            document.getElementById('talk-date').value = localDateStr;
+            document.getElementById('talk-time').value = now.toTimeString().substring(0, 5);
+
+            // 3. เริ่มทำงานระบบอัปโหลดและย่อขนาดรูปภาพ (Image Processing Setup)
+            setupImageInput();
+
+            // 4. เริ่มทำงานการตั้งค่าและลงทะเบียน PWA (Manifest & Service Worker)
+            initPWAFeatures();
+
+            // 5. ดึงข้อมูลจาก Google Sheets ครั้งแรกทันทีที่เปิดแอป
+            fetchRecordsFromSheet();
+        });
+
+        // ==========================================
+        // CORE SYSTEM FUNCTIONS (ฟังก์ชันระบบพื้นฐาน)
+        // ==========================================
+
+        /**
+         * ฟังก์ชันนาฬิกาแสดงเวลาปัจจุบันเป็นรูปแบบไทย
+         */
+        function updateLiveClock() {
+            const clockEl = document.getElementById('live-time');
+            if (clockEl) {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleString('th-TH', { 
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                });
+            }
+        }
+
+        // ==========================================
+        // IMAGE RESIZING & Drag and Drop (จัดการรูปภาพ)
+        // ==========================================
+
+        /**
+         * ตั้งค่าการลากและวางรูปภาพ (Drag & Drop) และปุ่มกดอัปโหลด
+         */
+        function setupImageInput() {
+            const input = document.getElementById('image-input');
+            const removeBtn = document.getElementById('remove-img-btn');
+            const dropZone = document.getElementById('drop-zone');
+
+            input.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    processImage(e.target.files[0]);
+                }
+            });
+
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                resetImageState();
+            });
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('border-primary-500', 'bg-emerald-50/50');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('border-primary-500', 'bg-emerald-50/50');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files[0]) {
+                    processImage(files[0]);
+                }
+            });
+        }
+
+        /**
+         * ย่อขนาดรูปภาพโดยใช้ HTML5 Canvas เพื่อป้องกันไม่ให้ขนาดรูปภาพใหญ่เกินขนาดจำกัดของ Google Sheets
+         */
+        function processImage(file) {
+            if (!file.type.startsWith('image/')) {
+                Swal.fire('ไฟล์ไม่ถูกต้อง', 'กรุณาอัปโหลดเฉพาะไฟล์รูปภาพเท่านั้น', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'กำลังตรวจสอบรูปภาพ',
+                html: 'ระบบกำลังดำเนินการบีบอัดภาพเพื่อประหยัดขนาดแผ่นชีต...',
+                didOpen: () => { Swal.showLoading(); },
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                timer: 800
+            });
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // ปรับขนาดความกว้างให้เหมาะสม
+                    const MAX_HEIGHT = 300;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // บีบอัดภาพเป็นฟอร์แมต jpeg คุณภาพ 70%
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    state.compressedImageBase64 = compressedBase64;
+
+                    // อัปเดตส่วนควบคุม UI
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('image-preview').src = compressedBase64;
+                };
+            };
+        }
+
+        /**
+         * ล้างข้อมูลรูปภาพออกจากแคชและ UI
+         */
+        function resetImageState() {
+            state.compressedImageBase64 = '';
+            document.getElementById('image-input').value = '';
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('image-preview').src = '#';
+        }
+
+        // ==========================================
+        // PWA FUNCTIONALITIES & SETUP (ระบบจัดการ PWA)
+        // ==========================================
+
+        /**
+         * เตรียมความพร้อมและติดตั้ง Manifest + Service Worker แบบ Dynamic ในไฟล์เดียว
+         */
+        function initPWAFeatures() {
+            // 1. สร้าง Web App Manifest ในรูปแบบ Blob URL
+            const appManifest = {
+                "name": "Safety Talk - บันทึกข้อมูลความปลอดภัย",
+                "short_name": "Safety Talk",
+                "description": "ระบบบันทึกข้อมูลความปลอดภัย อาชีวอนามัย และสภาพแวดล้อมในการทำงาน",
+                "start_url": window.location.href.split('?')[0], // ป้องกัน Query Parameter รบกวน Start URL
+                "display": "standalone",
+                "orientation": "portrait",
+                "background_color": "#047857",
+                "theme_color": "#047857",
+                "icons": [
+                    {
+                        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'><path d='M256 0c141.4 0 256 114.6 256 256S397.4 512 256 512 0 397.4 0 256 114.6 0 256 0zm0 40cc119.3 0 216 96.7 216 216s-96.7 216-216 216-216-96.7-216-216 96.7-216 216-216zm-16 280h32v80h-32v-80zm0-120h32v100h-32v-100z'/></svg>",
+                        "sizes": "192x192",
+                        "type": "image/svg+xml"
+                    },
+                    {
+                        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'><path d='M256 0c141.4 0 256 114.6 256 256S397.4 512 256 512 0 397.4 0 256 114.6 0 256 0zm0 40cc119.3 0 216 96.7 216 216s-96.7 216-216 216-216-96.7-216-216 96.7-216 216-216zm-16 280h32v80h-32v-80zm0-120h32v100h-32v-100z'/></svg>",
+                        "sizes": "512x512",
+                        "type": "image/svg+xml"
+                    }
+                ]
+            };
+            
+            const manifestString = JSON.stringify(appManifest);
+            const manifestBlob = new Blob([manifestString], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            document.getElementById('pwa-manifest').setAttribute('href', manifestUrl);
+
+            // 2. ตรวจสอบการลงทะเบียน Service Worker (รองรับ HTTPS และ localhost)
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'safety-talk-cache-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            fetch(e.request).catch(() => caches.match(e.request))
+                        );
+                    });
+                `;
+                
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log("PWA Service Worker registered successfully"))
+                    .catch((err) => console.log("Service Worker Registration bypassed (Expected locally or in Google iframes):", err));
+            }
+
+            // 3. เริ่มขั้นตอนตรวจสอบการแสดงผลป้ายติดตั้ง PWA (Install Banner Detection)
+            setupPWAInstallPrompt();
+        }
+
+        /**
+         * ฟังก์ชันตรวจสอบอุปกรณ์เพื่อแสดงแบนเนอร์แนะนำการติดตั้งที่เหมาะสม
+         */
+        function setupPWAInstallPrompt() {
+            const isDismissed = localStorage.getItem('pwa_install_dismissed') === 'true';
+            if (isDismissed) return; // หากเคยกดปิดป้ายแนะนำไปแล้ว จะไม่รบกวนแสดงซ้ำอีก
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+            // ตรวจสอบว่าแอปถูกติดตั้งไปแล้วหรือยัง
+            if (isStandalone) return;
+
+            const banner = document.getElementById('pwa-install-banner');
+            const iosInstructions = document.getElementById('pwa-ios-instructions');
+            const androidInstallArea = document.getElementById('pwa-android-install-area');
+
+            if (isIOS) {
+                // หากใช้งานบน iPhone/iPad (iOS) จะแสดงลำดับขั้นตอนการ Share ➔ Add to Home Screen บน Safari
+                banner.classList.remove('hidden');
+                iosInstructions.classList.remove('hidden');
+            }
+
+            // ดักรับเหตุการณ์ก่อนหน้าจอเสนอหน้าต่างติดตั้ง (ของฝั่ง Android/Chrome)
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e; // บันทึก Event ไว้
+
+                // แสดงแบนเนอร์และปุ่มติดตั้ง
+                banner.classList.remove('hidden');
+                androidInstallArea.classList.remove('hidden');
+            });
+
+            // ตั้งค่าปุ่มกดติดตั้งสำหรับ Android / Chrome
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    
+                    deferredPrompt.prompt(); // แสดงหน้าต่างติดตั้งของระบบเบราว์เซอร์
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('User accepted the PWA install prompt');
+                        dismissInstallBanner();
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        /**
+         * ซ่อนป้ายแบนเนอร์ติดตั้ง
+         */
+        function dismissInstallBanner() {
+            document.getElementById('pwa-install-banner').classList.add('hidden');
+            localStorage.setItem('pwa_install_dismissed', 'true');
+        }
+
+        // ==========================================
+        // INTERACTIVE TABS CONTROLLER (ระบบควบคุมและสลับแท็บ)
+        // ==========================================
+        
+        /**
+         * ฟังก์ชันสั่งสลับแท็บเมนูการวิเคราะห์สถิติต่างๆ ในส่วนของ Dashboard
+         */
+        function switchDashboardTab(tabId) {
+            const tabs = ['total', 'monthly', 'branch'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                if (t === tabId) {
+                    // ปรับสไตล์ปุ่มที่กำลังใช้งานอยู่ (Active Class)
+                    btn.className = "flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1";
+                    panel.classList.remove('hidden');
+                } else {
+                    // ปรับสไตล์ปุ่มที่ยังไม่ได้กดเลือก (Inactive Class)
+                    btn.className = "flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all duration-200 text-center whitespace-nowrap bg-transparent text-gray-600 hover:bg-gray-100 flex items-center justify-center gap-1";
+                    panel.classList.add('hidden');
+                }
+            });
+        }
+
+        // ==========================================
+        // TIMEZONE-SAFE DATE UTILITIES (ฟังก์ชันประมวลผลวันเวลาเฉพาะโซนไทย)
+        // ==========================================
+
+        /**
+         * แปลง ISO Date String จาก Google Sheets คลาวด์ ให้ตรงกับวันที่จริงของประเทศไทย (GMT+7) 100%
+         */
+        function parseDateToThaiString(isoString) {
+            if (!isoString) return "";
+            if (typeof isoString === 'string' && isoString.includes('T')) {
+                const d = new Date(isoString);
+                if (!isNaN(d.getTime())) {
+                    try {
+                        // ใช้ Intl.DateTimeFormat จัดฟอร์แมต ISO แบบสากล "en-CA" (YYYY-MM-DD) โดยระบุโซนเวลา Asia/Bangkok
+                        const formatter = new Intl.DateTimeFormat('en-CA', {
+                            timeZone: 'Asia/Bangkok',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+                        return formatter.format(d);
+                    } catch (err) {
+                        // Fallback สำรองหากเบราว์เซอร์ไม่รองรับ
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const dayVal = String(d.getDate()).padStart(2, '0');
+                        return `${y}-${m}-${dayVal}`;
+                    }
+                }
+            }
+            return isoString;
+        }
+
+        // ==========================================
+        // DATA POSTING & SHEET SAVING (ระบบบันทึกข้อมูล)
+        // ==========================================
+
+        /**
+         * ดักจับเหตุการณ์คลิกบันทึกฟอร์ม Safety Talk
+         */
+        document.getElementById('safety-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('emp-name').value.trim();
+            const branch = document.getElementById('emp-branch').value.trim();
+            const date = document.getElementById('talk-date').value;
+            const time = document.getElementById('talk-time').value;
+            const details = document.getElementById('talk-details').value.trim();
+            const image = state.compressedImageBase64;
+
+            if (!name || !branch || !date || !time || !details) {
+                Swal.fire('กรอกข้อมูลไม่ครบ', 'กรุณาระบุข้อมูลจำเป็นที่มีเครื่องหมาย * ให้ครบถ้วน', 'warning');
+                return;
+            }
+
+            const recordId = 'ST-' + Date.now();
+            const newRecordPayload = {
+                id: recordId,
+                date: date,
+                time: time,
+                name: name,
+                branch: branch,
+                details: details,
+                image: image
+            };
+
+            showFullPageLoading('กำลังบันทึกข้อมูลความปลอดภัย...', 'กำลังตรวจสอบและส่งรายงานบันทึกข้อมูลไปที่คลาวด์ Google Sheet กรุณารอสักครู่');
+
+            try {
+                // ส่งข้อมูลแบบ POST ไปยัง Google Apps Script Web App (ใช้โหมด no-cors)
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newRecordPayload)
+                });
+
+                // จัดการสถานะบันทึกสำเร็จปกติ
+                handleSaveSuccess(newRecordPayload, false);
+
+            } catch (error) {
+                console.error("Cloud saving failed, Reverting to local fallback:", error);
+                // หากส่งคลาวด์ติดขัด (เช่น ออฟไลน์) ระบบจะทำการบันทึกลงหน่วยความจำเบราว์เซอร์สำรองทันที เพื่อป้องกันข้อมูลพนักงานสูญหาย
+                handleSaveSuccess(newRecordPayload, true);
+            }
+        });
+
+        /**
+         * ดำเนินการเมื่อบันทึกข้อมูลเสร็จสิ้น
+         */
+        function handleSaveSuccess(newRecord, offlineMode) {
+            Swal.close();
+
+            state.records.unshift(newRecord);
+            state.filteredRecords = [...state.records];
+            
+            renderHistoryTable();
+            renderStatsDashboard();
+
+            if (offlineMode) {
+                let localSaved = JSON.parse(localStorage.getItem('safety_talk_local_db') || '[]');
+                localSaved.unshift(newRecord);
+                localStorage.setItem('safety_talk_local_db', JSON.stringify(localSaved));
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'บันทึกสำเร็จ (ในเครื่องออฟไลน์)',
+                    text: 'เซฟข้อมูลบนเบราว์เซอร์ให้แล้วเนื่องจากการซิงค์คลาวด์ติดขัด ระบบจะซิงค์ใหม่อัตโนมัติเมื่อเครือข่ายพร้อมทำงาน',
+                    confirmButtonColor: '#f59e0b',
+                    confirmButtonText: 'ตกลง'
+                });
+                
+                updateSyncBarStatus('ซิงค์ติดขัด (เซฟสำรองในเครื่อง)', false);
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกข้อมูลสำเร็จ!',
+                    text: 'นำส่งข้อมูล Safety Talk เข้าสู่คลาวด์สเปรดชีตเป็นที่เรียบร้อย',
+                    confirmButtonColor: '#10b981',
+                    confirmButtonText: 'ตกลง',
+                    timer: 3000
+                });
+
+                updateSyncBarStatus('ซิงค์และบันทึกคลาวด์สำเร็จ', true);
+            }
+
+            // ล้างค่าในฟอร์มเพื่อเตรียมป้อนข้อมูลคนถัดไป
+            document.getElementById('emp-name').value = '';
+            document.getElementById('emp-branch').value = '';
+            document.getElementById('talk-details').value = '';
+            resetImageState();
+
+            // รีดึงข้อมูลอัปเดตจาก Google Sheets อีกครั้งหลังผ่านไป 2 วินาทีเพื่อความแกนยำ
+            setTimeout(fetchRecordsFromSheet, 2000);
+        }
+
+        // ==========================================
+        // DATA RETRIEVAL (ระบบดึงข้อมูลคลาวด์)
+        // ==========================================
+
+        /**
+         * ดึงข้อมูลบันทึกทั้งหมดจาก Google Apps Script API (พร้อมระบบ Defensive Filtering ป้องกันข้อมูลเสียหาย)
+         */
+        async function fetchRecordsFromSheet() {
+            setTableLoadingState();
+            updateSyncBarStatus('กำลังดาวน์โหลดข้อมูลล่าสุด...', true);
+
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const result = await res.json();
+
+                if (result && result.status === 'success') {
+                    // ระบบตรวจสอบและป้องกันกรณีข้อมูลที่ดึงมาไม่ใช่ Array หรือเป็นโครงสร้างเปล่า
+                    const rawData = Array.isArray(result.data) ? result.data : [];
+                    
+                    state.records = rawData.map(r => {
+                        if (!r) return null; // ข้ามวัตถุที่ไม่มีค่าจริง
+                        
+                        // เรียกใช้ตัวแปลง Timezone อัจฉริยะ ป้องกันวันที่ June 13 กลายเป็น June 12
+                        const parsedDate = parseDateToThaiString(r.date || "");
+                        
+                        return {
+                            id: r.id || 'ST-' + Math.random(),
+                            date: parsedDate,
+                            time: r.time ? r.time.toString().substring(0, 5) : '',
+                            name: r.name || 'ไม่ระบุชื่อ',
+                            branch: r.branch || 'ไม่ระบุสาขา',
+                            details: r.details || 'ไม่มีรายละเอียดการบันทึก',
+                            image: r.image || ''
+                        };
+                    }).filter(Boolean).reverse(); // คัดกรองเฉพาะตัวแปรที่มีอยู่จริง และนำรายการล่าสุดขึ้นด้านบน
+
+                    state.filteredRecords = [...state.records];
+                    state.lastSyncTime = new Date().toLocaleTimeString('th-TH');
+                    
+                    if (state.records.length === 0) {
+                        updateSyncBarStatus('ออนไลน์ (เชื่อมต่อสำเร็จ - ยังไม่มีข้อมูลในตารางคลาวด์)', true);
+                    } else {
+                        updateSyncBarStatus('ซิงค์คลาวด์เสร็จสมบูรณ์', true);
+                    }
+                    
+                    renderHistoryTable();
+                    renderStatsDashboard();
+
+                } else {
+                    throw new Error("API status message failed");
+                }
+            } catch (err) {
+                console.error("Could not load from Apps Script, loading localStorage fallback:", err);
+                
+                let localSaved = JSON.parse(localStorage.getItem('safety_talk_local_db') || '[]');
+                state.records = localSaved;
+                state.filteredRecords = [...state.records];
+                
+                renderHistoryTable();
+                renderStatsDashboard();
+
+                updateSyncBarStatus('เชื่อมต่อระบบคลาวด์ไม่ได้ (แสดงประวัติสำรองชั่วคราว)', false);
+            }
+        }
+
+        /**
+         * สั่งรีเฟรชหรือดึงข้อมูลใหม่ด่วนด้วยตนเอง (Manual Trigger)
+         */
+        function forceSyncData() {
+            Swal.fire({
+                title: 'ซิงค์ข้อมูลกับคลาวด์ด่วน',
+                text: 'ระบบกำลังติดต่อประสานงานกับตารางสเปรดชีตส่วนกลาง...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 1000,
+                didOpen: () => { fetchRecordsFromSheet(); }
+            });
+        }
+
+        // ==========================================
+        // UI RENDERERS & FILTERS (ระบบแสดงผลและการกรองข้อมูล)
+        // ==========================================
+
+        /**
+         * แสดงสถานะกำลังหมุนโหลดข้อมูลลงในตารางหลัก
+         */
+        function setTableLoadingState() {
+            const tableBody = document.getElementById('records-table-body');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-12 text-center text-gray-500">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-2"></div>
+                        <p class="text-xs font-semibold">ระบบกำลังดาวน์โหลดสถิติล่าสุด...</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        /**
+         * ปรับปรุงความคืบหน้าสถานะการซิงค์ข้อมูล
+         */
+        function updateSyncBarStatus(msg, success) {
+            const textEl = document.getElementById('sync-text');
+            const dotEl = document.getElementById('sync-dot');
+            const pingEl = document.getElementById('sync-ping');
+            const syncTimeEl = document.getElementById('last-sync-time');
+
+            if (textEl && dotEl && pingEl) {
+                textEl.textContent = msg;
+                if (success) {
+                    textEl.className = "text-emerald-600 font-bold";
+                    dotEl.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500";
+                    pingEl.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+                } else {
+                    textEl.className = "text-amber-600 font-bold";
+                    dotEl.className = "relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500";
+                    pingEl.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75";
+                }
+            }
+
+            if (syncTimeEl && state.lastSyncTime) {
+                syncTimeEl.textContent = `ซิงค์ล่าสุด: ${state.lastSyncTime}`;
+            }
+        }
+
+        /**
+         * อัปเดตและเรนเดอร์ตารางบันทึกกิจกรรม Safety Talk หน้าแรกของเว็บบอร์ด
+         */
+        function renderHistoryTable() {
+            const tableBody = document.getElementById('records-table-body');
+            const countBadge = document.getElementById('record-count-badge');
+
+            if (!tableBody) return;
+
+            // เคสฐานข้อมูลว่างเปล่าทั้งหมด (First-time user setup)
+            if (state.records.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-12 px-6 text-center text-gray-500">
+                            <i class="fa-solid fa-circle-info text-3xl text-emerald-500 mb-2"></i>
+                            <p class="font-bold text-gray-800 text-sm">ยินดีต้อนรับสู่ระบบ Safety Talk!</p>
+                            <p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">ระบบคลาวด์เชื่อมต่อสมบูรณ์แล้ว แต่ปัจจุบันตารางว่างเปล่าอยู่ คุณสามารถเริ่มต้นบันทึกรายการแรกผ่านแบบฟอร์มด้านซ้ายได้เลยทันที!</p>
+                        </td>
+                    </tr>
+                `;
+                if (countBadge) countBadge.textContent = "ไม่มีข้อมูลประวัติ";
+                return;
+            }
+
+            // เคสการมีข้อมูลในระบบ แต่ผ่านการ Filter หรือค้นหาแล้วไม่เจอตัวข้อมูล
+            if (state.filteredRecords.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-12 text-center text-gray-500 font-medium">
+                            <i class="fa-solid fa-folder-open text-3xl text-gray-300 mb-2"></i>
+                            <p>ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหาของคุณ</p>
+                        </td>
+                    </tr>
+                `;
+                if (countBadge) countBadge.textContent = "พบ 0 รายการ";
+                return;
+            }
+
+            if (countBadge) {
+                countBadge.textContent = `พบ ${state.filteredRecords.length} รายการ`;
+            }
+
+            let rowsHtml = '';
+            state.filteredRecords.forEach((item) => {
+                // จัดการฟอร์แมตวันที่แสดงผลแบบปลอดภัยจาก Timezone (Timezone-Independent)
+                let formattedDate = item.date;
+                try {
+                    const dateParts = item.date.split('-');
+                    if (dateParts.length === 3) {
+                        const yearThaiShort = String(parseInt(dateParts[0]) + 543).substring(2);
+                        formattedDate = `${dateParts[2]}/${dateParts[1]}/${yearThaiShort}`;
+                    }
+                } catch (e) {}
+
+                rowsHtml += `
+                    <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                        <td class="py-3 px-4">
+                            <p class="font-bold text-gray-800">${formattedDate}</p>
+                            <p class="text-[10px] text-gray-500 font-mono"><i class="fa-solid fa-clock"></i> ${item.time || '-'}</p>
+                        </td>
+                        <td class="py-3 px-4">
+                            <button onclick="viewEmployeeHistoryPopup('${escapeJsStr(item.name)}', '${escapeJsStr(item.branch)}')" 
+                                class="font-semibold text-primary-600 hover:text-primary-700 hover:underline text-left">
+                                ${item.name}
+                            </button>
+                        </td>
+                        <td class="py-3 px-4 font-medium text-gray-600">${item.branch}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button onclick="viewRecordDetails('${item.id}')" title="ดูรายละเอียดหัวข้อ"
+                                    class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-1.5 rounded-lg transition">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = rowsHtml;
+        }
+
+        /**
+         * ฟังก์ชันหลบหลีกเครื่องหมายอัญประกาศใน JS ป้องกันบั๊กเวลารันลูป HTML
+         */
+        function escapeJsStr(str) {
+            if (!str) return '';
+            return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        /**
+         * การค้นหาข้อมูลแบบเรียลไทม์ (Real-time Search) และตรวจสอบช่วงวันที่บันทึก (แก้ไขบั๊กการเปรียบเทียบข้ามเขตเวลาแบบ 100%)
+         */
+        function handleRealTimeSearch() {
+            const query = document.getElementById('search-query').value.toLowerCase().trim();
+            const startVal = document.getElementById('search-date-start').value; // ISO format "YYYY-MM-DD"
+            const endVal = document.getElementById('search-date-end').value;     // ISO format "YYYY-MM-DD"
+
+            state.filteredRecords = state.records.filter((item) => {
+                // 1. ตรวจสอบเงื่อนไขข้อความค้นหา (ชื่อ / สาขา / รายละเอียดการสอนงาน)
+                const matchText = !query || 
+                                  item.name.toLowerCase().includes(query) || 
+                                  item.branch.toLowerCase().includes(query) || 
+                                  item.details.toLowerCase().includes(query);
+
+                // 2. ตรวจสอบการกรองแบบช่วงวันที่ (เปรียบเทียบในรูปแบบ string ตรงๆ เพื่อเลี่ยง Timezone Offset Bug)
+                let matchDate = true;
+                if (item.date) {
+                    if (startVal && item.date < startVal) matchDate = false;
+                    if (endVal && item.date > endVal) matchDate = false;
+                }
+
+                return matchText && matchDate;
+            });
+
+            renderHistoryTable();
+        }
+
+        /**
+         * เคลียร์ค่าการค้นหาทั้งหมดกลับสู่สภาวะปกติ
+         */
+        function clearSearchFilters() {
+            document.getElementById('search-query').value = '';
+            document.getElementById('search-date-start').value = '';
+            document.getElementById('search-date-end').value = '';
+            state.filteredRecords = [...state.records];
+            renderHistoryTable();
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'ล้างการค้นหาแล้ว',
+                text: 'แสดงรายการข้อมูลทั้งหมด',
+                timer: 1000,
+                showConfirmButton: false
+            });
+        }
+
+        /**
+         * สั่งแสดงข้อมูลทั้งหมด
+         */
+        function showAllRecords() {
+            clearSearchFilters();
+        }
+
+        // ==========================================
+        // DASHBOARD ANALYTICS (ส่วนวิเคราะห์ผลแดชบอร์ด)
+        // ==========================================
+
+        /**
+         * ประมวลผลทางสถิติและอัตราส่วนจำแนกรายสาขาขององค์กร
+         */
+        function renderStatsDashboard() {
+            // 1. คำนวณภาพรวมสากล
+            const total = state.records.length;
+            document.getElementById('stat-total').textContent = total;
+
+            // 2. คำนวณบันทึกของวันนี้โดยใช้เวลาท้องถิ่น (Local Timezone ของประเทศไทย)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+            
+            const todayRecords = state.records.filter(r => r.date === todayStr);
+            document.getElementById('stat-today').textContent = todayRecords.length;
+
+            // 3. จำนวนพนักงานผู้บันทึกแบบไม่ซ้ำชื่อกัน (Unique Count)
+            const uniquePeople = new Set(state.records.map(r => r.name.trim()));
+            document.getElementById('stat-people').textContent = uniquePeople.size;
+
+            // 4. คำนวณและประมวลผล สถิติรายเดือน (Dynamic Monthly Calculation)
+            const monthlyCounts = {};
+            const monthThai = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            
+            state.records.forEach(r => {
+                if (r.date) {
+                    const dateParts = r.date.split('-'); // ISO Format: YYYY-MM-DD
+                    if (dateParts.length >= 2) {
+                        const yearNum = parseInt(dateParts[0]);
+                        const monthIndex = parseInt(dateParts[1]) - 1;
+                        if (monthIndex >= 0 && monthIndex < 12 && !isNaN(yearNum)) {
+                            // แปลงเป็นปี พ.ศ. (เช่น "ม.ค. 69") เพื่อความเข้าใจง่ายของคนไทย
+                            const label = monthThai[monthIndex] + " " + (yearNum + 543).toString().substring(2);
+                            monthlyCounts[label] = (monthlyCounts[label] || 0) + 1;
+                        }
+                    }
+                }
+            });
+
+            const monthlyContainer = document.getElementById('monthly-bars');
+            if (monthlyContainer) {
+                let html = '';
+                const monthlyKeys = Object.keys(monthlyCounts);
+                
+                if (monthlyKeys.length === 0) {
+                    html = `<p class="text-xs text-gray-500 italic text-center py-4">ไม่มีข้อมูลบันทึกรายเดือน</p>`;
+                } else {
+                    monthlyKeys.forEach(m => {
+                        const count = monthlyCounts[m];
+                        const pct = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
+                        html += `
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-semibold text-gray-700">${m}</span>
+                                    <span class="font-bold text-gray-900">${count} รายการ (${pct}%)</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden flex">
+                                    <div class="bg-gradient-to-r from-blue-400 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                monthlyContainer.innerHTML = html;
+            }
+
+            // 5. คำนวณเปอร์เซ็นต์สะสมแยกตามสาขา (Dynamic Branch Calculation)
+            const branchCounts = {};
+            state.records.forEach(r => {
+                const b = (r.branch || "ไม่ระบุสาขา").trim();
+                if (b) {
+                    branchCounts[b] = (branchCounts[b] || 0) + 1;
+                }
+            });
+
+            const container = document.getElementById('branch-bars');
+            if (container) {
+                let html = '';
+                // ดึงและเรียงลำดับสาขาที่ได้สถิติสูงสุด 10 อันดับแรกตามความต้องการของผู้ใช้ (.slice(0, 10))
+                const sortedBranches = Object.keys(branchCounts)
+                    .sort((a,b) => branchCounts[b] - branchCounts[a])
+                    .slice(0, 10);
+                
+                if (sortedBranches.length === 0) {
+                    html = `<p class="text-xs text-gray-500 italic text-center py-4">ไม่มีข้อมูลสาขาสำหรับแสดงผล</p>`;
+                } else {
+                    sortedBranches.forEach(b => {
+                        const count = branchCounts[b];
+                        const pct = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
+                        html += `
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-semibold text-gray-700">${b}</span>
+                                    <span class="font-bold text-gray-900">${count} รายการ (${pct}%)</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden flex">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-yellow-400 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                container.innerHTML = html;
+            }
+        }
+
+        // ==========================================
+        // MODALS & DETAILED VIEWS (ระบบหน้าต่างป๊อปอัปพนักงานและเอกสาร)
+        // ==========================================
+
+        /**
+         * แสดงรายละเอียดบทสนทนาความปลอดภัยและพิจารณาประเด็นความเสี่ยงรายข้อ
+         */
+        function viewRecordDetails(id) {
+            const item = state.records.find(r => r.id === id);
+            if (!item) return;
+
+            let dateText = item.date;
+            try {
+                const dateParts = item.date.split('-');
+                if (dateParts.length === 3) {
+                    const monthsThai = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                    const day = parseInt(dateParts[2]);
+                    const monthText = monthsThai[parseInt(dateParts[1]) - 1];
+                    const yearThai = parseInt(dateParts[0]) + 543;
+                    dateText = `${day} ${monthText} ${yearThai}`;
+                }
+            } catch(e) {}
+
+            document.getElementById('det-modal-name').textContent = item.name;
+            document.getElementById('det-modal-branch').textContent = item.branch;
+            document.getElementById('det-modal-date').textContent = dateText;
+            document.getElementById('det-modal-time').textContent = item.time || '-';
+            document.getElementById('det-modal-details').textContent = item.details;
+
+            const imgEl = document.getElementById('det-modal-img');
+            const wrapper = document.getElementById('det-modal-image-wrapper');
+            if (item.image) {
+                imgEl.src = item.image;
+                wrapper.classList.remove('hidden');
+            } else {
+                imgEl.src = '';
+                wrapper.classList.add('hidden');
+            }
+
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-modal-content');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        /**
+         * เรียกดูสถิติตัวบุคคลและประวัติการลงบันทึก Safety Talk สะสมย้อนหลังทั้งหมดของพนักงานคนนั้นๆ
+         */
+        function viewEmployeeHistoryPopup(empName, empBranch) {
+            const matches = state.records.filter(r => r.name.trim().toLowerCase() === empName.trim().toLowerCase());
+            
+            document.getElementById('hist-modal-emp-name').textContent = empName;
+            document.getElementById('hist-modal-emp-branch').textContent = `สาขา: ${empBranch}`;
+            document.getElementById('hist-modal-total-count').textContent = matches.length;
+
+            const timelineBox = document.getElementById('hist-timeline-container');
+            if (matches.length === 0) {
+                timelineBox.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">ไม่พบประวัติการเข้าอบรมอื่นของพนักงานท่านนี้</p>`;
+            } else {
+                let html = '';
+                matches.forEach(item => {
+                    let dText = item.date;
+                    try {
+                        const dateParts = item.date.split('-');
+                        if (dateParts.length === 3) {
+                            const monthsThaiShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                            const day = parseInt(dateParts[2]);
+                            const monthText = monthsThaiShort[parseInt(dateParts[1]) - 1];
+                            const yearThai = parseInt(dateParts[0]) + 543;
+                            dText = `${day} ${monthText} ${yearThai}`;
+                        }
+                    } catch (e) {}
+
+                    html += `
+                        <div class="border-l-2 border-emerald-500 pl-3.5 py-1 relative">
+                            <span class="absolute -left-[5px] top-2 bg-emerald-500 h-2 w-2 rounded-full"></span>
+                            <div class="flex justify-between items-start">
+                                <span class="text-[10px] font-bold text-emerald-700">${dText} - ${item.time || ''} น.</span>
+                                <span class="text-[9px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">${item.branch}</span>
+                            </div>
+                            <p class="text-xs font-semibold text-gray-800 line-clamp-1 mt-0.5">${item.details}</p>
+                        </div>
+                    `;
+                });
+                timelineBox.innerHTML = html;
+            }
+
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        // ==========================================
+        // UTILITY LOADERS (ช่วยเหลือหน้าจอรอโหลด)
+        // ==========================================
+
+        /**
+         * แสดงบล็อกฉากรอประมวลผลทั้งหมดเพื่อความสวยงามและการป้องกันการกดซ้ำซ้อน (UX Guard)
+         */
+        function showFullPageLoading(title, text) {
+            Swal.fire({
+                title: title,
+                html: `
+                    <div class="p-4 space-y-4">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
+                        <p class="text-xs text-gray-500">${text}</p>
+                    </div>
+                `,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+        }
+
+        function closeHistoryModal() {
+            const modal = document.getElementById('history-modal');
+            const content = document.getElementById('history-modal-content');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+    </script>
+</body>
+</html>
